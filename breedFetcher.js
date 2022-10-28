@@ -1,25 +1,26 @@
 const request = require('request'); // HTTP request
 
-let breed = process.argv.slice(2); // Accessing breed via command line
-const url = `https://api.thecatapi.com/v1/breeds/search?q=${breed}`; // Custom URL with breed
-
 // Making HTTP requests using request package
-const breedDescription = function(breed) {
+const fetchBreedDescription = function(breed, callback) {
+
+  const url = `https://api.thecatapi.com/v1/breeds/search?q=${breed}`; // Custom URL with breed
 
   request(url, (error, response, body) => {
 
     if (error) {
-      console.log(`Failed to request details: ${error}`); // Edge Case: Request error
+      callback(`Failed to request details: ${error}`, null); // Edge Case: Request error
     }
 
+    // console.log(response.json());
     const data = JSON.parse(body);
 
-    if (breed = data[0]) {
-      console.log(breed.description);
+    if (breed === data[0].name) {
+      callback(null, data[0].description);
     } else {
-      console.log(`Failed to find ${breed} description`); // Edge Case: Breed not found
+      callback(`Failed to find ${breed} description`, null); // Edge Case: Breed not found
     }
   });
 };
 
-breedDescription();
+
+module.exports = { fetchBreedDescription };
